@@ -15,11 +15,31 @@ client = genai.Client(
     location="us-central1",
 )
 
-tema = "n8n"
+# Caminho para o arquivo de texto com o prompt e tema
+caminho_prompt = "prompt.txt"
 
-source = types.GenerateVideosSource(
-    prompt=f"""Um videos com dica de {tema}"""
-)
+# Lê o tema, caminho da imagem e prompt do arquivo de texto
+# Primeira linha = tema
+# Segunda linha = caminho da imagem (ou "none" para não usar imagem)
+# Resto das linhas = prompt do vídeo
+with open(caminho_prompt, "r", encoding="utf-8") as f:
+    linhas = f.read().splitlines()
+    tema = linhas[0].strip()
+    caminho_imagem_lido = linhas[1].strip().lower()
+    prompt_texto = "\n".join(linhas[2:]).strip()
+
+# Determina se vamos usar imagem
+caminho_imagem = caminho_imagem_lido if caminho_imagem_lido != "none" else None
+
+# Cria o source com prompt e imagem (se fornecida)
+source_kwargs = {
+    "prompt": prompt_texto
+}
+
+if caminho_imagem:
+    source_kwargs["image"] = types.Image.from_file(location=caminho_imagem)
+
+source = types.GenerateVideosSource(**source_kwargs)
 
 config = types.GenerateVideosConfig(
     aspect_ratio="9:16",
