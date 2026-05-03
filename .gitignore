@@ -1,0 +1,22 @@
+# --- IGNORAR POR EXTENSÃO ---
+# Ignora todos os arquivos com essas extensões em qualquer pasta
+*.log
+*.tmp
+*.exe
+*.bin
+*.db
+
+# --- IGNORAR POR NOME ESPECÍFICO ---
+# Ignora arquivos (ou pastas) com esses nomes exatos
+.v
+__pycache__
+.env
+.venv
+vtx.json
+
+# --- IGNORAR PASTAS INTEIRAS ---
+# Ignora a pasta e tudo que estiver dentro dela
+node_modules/
+build/
+dist/
+.env
