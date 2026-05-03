@@ -1,3 +1,10 @@
-1
-none
-Um sábio dando conselho a um jovem
+
+job20.png
+🎬 PROMPT VÍDEO 2
+
+[INSERT CHARACTER PHOTO HERE]
+Vertical video, 9:16 format, 8 seconds exactly.
+No text. No subtitles. No overlays.
+The character speaks in Brazilian Portuguese (pt-BR) and says:
+"Nós implementamos fluxos inteligentes que eliminam o erro humano e aceleram sua operação"
+Expression is surprised and provocative. Eyebrows raised. Slight smirk. No fade out.

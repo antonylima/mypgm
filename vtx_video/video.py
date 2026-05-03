@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+import sqlite3
 from google import genai
 from google.genai import types
 
@@ -14,6 +15,44 @@ client = genai.Client(
     project="somnacity-493113",
     location="us-central1",
 )
+
+# 3. Configuração do banco de dados SQLite
+def init_db():
+    conn = sqlite3.connect("videos.db")
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS videos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            tema TEXT NOT NULL,
+            prompt TEXT NOT NULL,
+            caminho_imagem TEXT,
+            nome_arquivo TEXT NOT NULL,
+            data_geracao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+def get_ultimo_id():
+    conn = sqlite3.connect("videos.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT MAX(id) FROM videos")
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result[0] else 0
+
+def inserir_video(tema, prompt, caminho_imagem, nome_arquivo):
+    conn = sqlite3.connect("videos.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO videos (tema, prompt, caminho_imagem, nome_arquivo) VALUES (?, ?, ?, ?)",
+        (tema, prompt, caminho_imagem, nome_arquivo)
+    )
+    conn.commit()
+    conn.close()
+
+# Inicializa o banco de dados
+init_db()
 
 # Caminho para o arquivo de texto com o prompt e tema
 caminho_prompt = "prompt.txt"
@@ -78,11 +117,18 @@ for i, generated_video in enumerate(generated_videos):
         # Pega os dados do vídeo gerado
         video_bytes = generated_video.video.video_bytes
         
-        # Define o nome do arquivo (ex: video1.mp4)
-        nome_arquivo = f"video_{tema}_{i}.mp4"
+        # Obtém o último ID e define o próximo ID para o nome do arquivo
+        ultimo_id = get_ultimo_id()
+        proximo_id = ultimo_id + 1
+        
+        # Define o nome do arquivo começando com o próximo ID
+        nome_arquivo = f"{proximo_id}_video_{tema}_{i}.mp4"
         
         # Cria e salva o arquivo fisicamente na pasta onde você rodou o script
         with open(nome_arquivo, "wb") as f:
             f.write(video_bytes)
+            
+        # Insere o vídeo no banco de dados
+        inserir_video(tema, prompt_texto, caminho_imagem, nome_arquivo)
             
         print(f"Vídeo salvo com sucesso na sua máquina: {nome_arquivo}")
